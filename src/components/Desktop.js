@@ -6,8 +6,9 @@ import Screen from './Screen'
 const Wrapper = styled.div`
     position: relative;
     width: auto;
-    background: #ff0;
-    height: 100vh;
+    background: #fff;
+    padding-top: 33.333%;
+    height: 0;
 `
 
 export default function Desktop({ screens }) {
