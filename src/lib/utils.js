@@ -6,26 +6,28 @@ const absolutePosition = ({ screens, position }) => {
     // return { x: min.x + position.x, y: min.y + position.y }
 }
 
-const getMin = ({ screens }) => {
+const getMin = ({ screens, prop }) => {
 
-    let minX = screens[0].pixelBounds.x;
-    let minY = screens[0].pixelBounds.y;
+    let minX = Number.MAX_SAFE_INTEGER
+    let minY = Number.MAX_SAFE_INTEGER
 
-    for (let i = 1; i < screens.length; i++) {
+    for (let i = 0; i < screens.length; i++) {
 
         const screen = screens[i]
+        const x = screen[prop].x
+        const y = screen[prop].y
 
-        if (screen.pixelBounds.x < minX)
-            minX = screen.pixelBounds.x
+        if (x < minX)
+            minX = x
 
-        if (screen.pixelBounds.y < minY)
-            minY = screen.pixelBounds.y
+        if (y < minY)
+            minY = y
     }
 
     return { x: Math.abs(minX), y: Math.abs(minY) }
 }
 
-const getMax = ({ screens }) => {
+const getMax = ({ screens, prop }) => {
 
     let maxX = 0
     let maxY = 0
@@ -34,60 +36,39 @@ const getMax = ({ screens }) => {
 
         const screen = screens[i]
 
-        if (screen.absoluteBounds.x + screen.absoluteBounds.width > maxX)
-            maxX = screen.absoluteBounds.x + screen.absoluteBounds.width
+        if (screen[prop].x + screen[prop].width > maxX)
+            maxX = screen[prop].x + screen[prop].width
 
-        if (screen.absoluteBounds.y + screen.absoluteBounds.height > maxY)
-            maxY = screen.absoluteBounds.y + screen.absoluteBounds.height
+        if (screen[prop].y + screen[prop].height > maxY)
+            maxY = screen[prop].y + screen[prop].height
     }
 
     return { x: maxX, y: maxY }
 }
 
-const getPrimary = ({ screens }) => {
-
-    for (let screen of screens) {
-
-        if (screen.bounds.x == 0 && screen.bounds.y == 0) {
-
-            return screen
-        }
-    }
-}
-
 const normalizeScreens = ({ screens }) => {
 
-    const primary = getPrimary({ screens })
+    let normalized = screens
 
-    const pixels = screens.map(s => {
+    const min = getMin({ screens: normalized, prop: 'bounds' })
 
-        const pixelBounds = {
-            x: Math.floor(s.bounds.x * primary.scaleFactor),
-            y: Math.floor(s.bounds.y * primary.scaleFactor),
-            width: Math.floor(s.bounds.width * primary.scaleFactor),
-            height: Math.floor(s.bounds.height * primary.scaleFactor),
-        }
+    console.log('min', min)
 
-        return { ...s, pixelBounds }
-    })
-
-    const min = getMin({ screens: pixels })
-
-    const absolute = pixels.map(s => {
+    normalized = normalized.map(s => {
 
         const absoluteBounds = {
-            x: s.pixelBounds.x + min.x,
-            y: s.pixelBounds.y + min.y,
-            width: s.pixelBounds.width,
-            height: s.pixelBounds.height,
+            x: s.bounds.x + min.x,
+            y: s.bounds.y + min.y,
+            width: s.bounds.width,
+            height: s.bounds.height,
         }
 
         return { ...s, absoluteBounds }
     })
 
-    const max = getMax({ screens: absolute })
+    const max = getMax({ screens: normalized, prop: 'absoluteBounds' })
 
-    const percent = absolute.map(s => {
+    normalized = normalized.map(s => {
 
         const percentBounds = {
             x: s.absoluteBounds.x * 100 / max.x,
@@ -99,7 +80,7 @@ const normalizeScreens = ({ screens }) => {
         return { ...s, percentBounds }
     })
 
-    return percent
+    return normalized
 }
 
 export { absolutePosition, normalizeScreens }
