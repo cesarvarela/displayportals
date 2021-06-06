@@ -1,25 +1,20 @@
 import React, { createRef, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
+import { normalizeScreens } from '../lib/utils'
 import Screen from './Screen'
 
 const Wrapper = styled.div`
     position: relative;
     height: 400px;
-    width: 400px;
+    width: auto;
     background: #ff0;
 `
 
 export default function Desktop({ screens }) {
 
-    const ref = useRef()
-    const [size, setSize] = useState()
+    const [_screens, setScreens] = useState(normalizeScreens({ screens }))
 
-    useEffect(() => {
-
-        setSize({ width: ref.current.clientWidth, height: ref.current.clientHeight })
-    }, [])
-
-    return <Wrapper ref={ref}>
-        {screens.map(s => <Screen key={s.id} {...s} desktopSize={size} />)}
+    return <Wrapper>
+        {_screens.map(s => <Screen key={s.id} {...s} />)}
     </Wrapper>
 }

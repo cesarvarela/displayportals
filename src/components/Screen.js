@@ -7,16 +7,26 @@ const Wrapper = styled.div`
     border-radius: 6px;
 `
 
-const percentage = (x, desktopSize) => `${x}%`
+const percentage = (x) => `${x}%`
 
-export default function Screen({ id, bounds, scaleFactor, desktopSize }) {
+export default function Screen({ id, bounds, pixelBounds, percentBounds, absoluteBounds, scaleFactor }) {
 
-    console.log(scaleFactor, desktopSize)
+    const style = {
+        left: percentage(percentBounds.x),
+        top: percentage(percentBounds.y),
+        width: percentage(percentBounds.width),
+        height: percentage(percentBounds.height),
+    }
 
-    const width = percentage(bounds.width, desktopSize)
-    const height = percentage(bounds.height, desktopSize)
-    const left = percentage(bounds.x, desktopSize)
-    const top = percentage(bounds.y, desktopSize)
-
-    return <Wrapper style={{ left, top, width, height }} >{id}</Wrapper>
+    return <Wrapper style={style}>
+        {id}
+        <br />
+        electron: ({bounds.x},{bounds.y}) {bounds.width}x{bounds.height}
+        <br />
+        pixels: ({pixelBounds.x},{pixelBounds.y}) {pixelBounds.width}x{pixelBounds.height}
+        <br />
+        absolute: ({absoluteBounds.x},{absoluteBounds.y}) {absoluteBounds.width}x{absoluteBounds.height}
+        <br />
+        {scaleFactor}
+    </Wrapper>
 }
