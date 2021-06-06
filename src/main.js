@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, contextBridge, screen, ipcMain } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -12,10 +12,11 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
-    }
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
+    },
   });
 
   // and load the index.html of the app.
@@ -48,3 +49,7 @@ app.on('activate', () => {
 });
 
 require('@electron/remote/main').initialize()
+
+ipcMain.handle('getAllDisplays', async (event) => {
+  return screen.getAllDisplays()
+})

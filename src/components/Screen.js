@@ -53,7 +53,7 @@ export default function Screen({ id, bounds, primaryBounds, percentBounds, absol
             {scaleFactor}
         </Debug>
 
-        <Portal style={top} />
+        <Portal style={top} onClick={() => 1} />
         <Portal style={bottom} />
         <Portal style={left} />
         <Portal style={right} />

@@ -53,7 +53,10 @@
                 {
                   "html": "./src/windows/main/index.html",
                   "js": "./src/windows/main/index.js",
-                  "name": "main_window"
+                  "name": "main_window",
+                  "preload": {
+                    "js": "./src/preload.js"
+                  }
                 },
                 {
                   "html": "./src/windows/portal/index.html",
