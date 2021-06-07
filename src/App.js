@@ -20,9 +20,16 @@ function App() {
         load()
     }, [])
 
+    const onDebugClick = ()=> {
+        
+    }
+
     return <Grommet>
         <Box>
             {screens.length && <Desktop screens={screens} />}
+        </Box>
+        <Box>
+            <Button label="debug window" />
         </Box>
     </Grommet>
 }
