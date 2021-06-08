@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { percentage } from '../lib/utils'
 
 const Wrapper = styled.div`
     position: absolute;
@@ -12,24 +13,14 @@ const Wrapper = styled.div`
     background-color: #fff;
 `
 
-const Portal = styled.div`
-    cursor: pointer;
-    background: #eee;
-    position: absolute;
-    &:hover {
-        background: #ccc;
-    }
-`
-
 const Debug = styled.div`
     position: absolute;
     display: none;
 `
 
-const percentage = (x) => `${x}%`
 const f = Math.floor
 
-export default function Screen({ id, bounds, primaryBounds, percentBounds, absoluteBounds, scaleFactor }) {
+export default function Screen({ id, bounds, percentBounds, absoluteBounds, scaleFactor, editMode }) {
 
     const style = {
         left: percentage(percentBounds.x),
@@ -37,11 +28,6 @@ export default function Screen({ id, bounds, primaryBounds, percentBounds, absol
         width: percentage(percentBounds.width),
         height: percentage(percentBounds.height),
     }
-
-    const top = { height: 8, width: '100%', top: 0 }
-    const bottom = { height: 8, width: '100%', bottom: 0 }
-    const left = { width: 8, height: '100%', left: 0 }
-    const right = { width: 8, height: '100%', right: 0 }
 
     return <Wrapper style={style}>
         <Debug>
@@ -53,11 +39,5 @@ export default function Screen({ id, bounds, primaryBounds, percentBounds, absol
             <br />
             {scaleFactor}
         </Debug>
-
-        <Portal style={top} onClick={() => 1} />
-        <Portal style={bottom} />
-        <Portal style={left} />
-        <Portal style={right} />
-
     </Wrapper>
 }

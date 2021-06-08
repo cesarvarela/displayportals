@@ -47,9 +47,14 @@ class Api {
             return screen.getAllDisplays()
         })
 
-        ipcMain.handle('getPortals', async () => {
+        ipcMain.handle('getConnections', async () => {
 
-            return this.getSetting('portals')
+            return this.getSetting('connections')
+        })
+
+        ipcMain.handle('addConnection', async (_, connection) => {
+
+            return this.addConnection(connection)
         })
     }
 
@@ -80,15 +85,28 @@ class Api {
         }
     }
 
-    async savePortal() {
-        storage.set()
+    async addConnection({ from, to }) {
 
+        const connections = await this.getSetting({ key: 'connections' })
+
+        connections.push({ from, to })
+
+        await this.setSetting({ key: 'connections', data: connections })
+    }
+
+    async removeConnection({ from, to }) {
+
+    }
+
+    async getConnections() {
+
+        return this.getSetting({ key: 'connections' })
     }
 
     async setupStorage() {
 
-        if (!await this.hasSetting({ key: 'portals' })) {
-            await this.setSetting({ key: 'portals', data: [] })
+        if (!await this.hasSetting({ key: 'connections' })) {
+            await this.setSetting({ key: 'connections', data: [] })
         }
     }
 

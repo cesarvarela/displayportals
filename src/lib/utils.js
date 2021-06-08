@@ -52,8 +52,6 @@ const normalizeScreens = ({ screens }) => {
 
     const min = getMin({ screens: normalized, prop: 'bounds' })
 
-    console.log('min', min)
-
     normalized = normalized.map(s => {
 
         const absoluteBounds = {
@@ -83,4 +81,6 @@ const normalizeScreens = ({ screens }) => {
     return normalized
 }
 
-export { absolutePosition, normalizeScreens }
+const percentage = (x) => `${x}%`
+
+export { absolutePosition, normalizeScreens, percentage }

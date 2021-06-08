@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Grommet, Button, Box, Header, List, Heading, Text } from 'grommet'
 import { Add } from 'grommet-icons'
 import Screen from './components/Screen'
 import { absolutePosition, normalizeScreens } from './lib/utils'
+import Portal from './components/Portal'
+
+const { getAllDisplays, addConnection } = window.mouseportals
 
 const theme = {
     global: {
@@ -25,29 +28,92 @@ const Desktop = styled.div`
     height: 0;
 `
 
-const { getAllDisplays, getPortals } = window.mouseportals
-
 function App() {
 
+    const desktopRef = useRef()
     const [screens, setScreens] = useState([])
     const [portals, setPortals] = useState([])
-    const []
+    const [from, setFrom] = useState(null)
+    const [connections, setConnections] = useState([])
 
     useEffect(() => {
 
         const load = async () => {
             const result = await getAllDisplays()
-            setScreens(normalizeScreens({ screens: result }))
+            const normalized = normalizeScreens({ screens: result })
+            let portals = []
 
+            for (let screen of normalized) {
 
+                const topPortal = {
+                    id: `${screen.id}-top`,
+                    left: screen.percentBounds.x,
+                    top: screen.percentBounds.y,
+                    width: screen.percentBounds.width,
+                    height: screen.percentBounds.height / 10,
+                }
+
+                const bottomPortal = {
+                    id: `${screen.id}-bottom`,
+                    left: screen.percentBounds.x,
+                    top: screen.percentBounds.y + screen.percentBounds.height - screen.percentBounds.height / 10,
+                    width: screen.percentBounds.width,
+                    height: screen.percentBounds.height / 10,
+                }
+
+                const leftPortal = {
+                    id: `${screen.id}-left`,
+                    left: screen.percentBounds.x,
+                    top: screen.percentBounds.y,
+                    width: screen.percentBounds.height / 30,
+                    height: screen.percentBounds.height,
+                }
+
+                const rightPortal = {
+                    id: `${screen.id}-right`,
+                    left: screen.percentBounds.x + screen.percentBounds.width - screen.percentBounds.height / 30,
+                    top: screen.percentBounds.y,
+                    width: screen.percentBounds.height / 30,
+                    height: screen.percentBounds.height,
+                }
+
+                portals.push(leftPortal)
+                portals.push(topPortal)
+                portals.push(rightPortal)
+                portals.push(bottomPortal)
+            }
+
+            setPortals(portals)
+            setScreens(normalized)
         }
 
         load()
     }, [])
 
-    const onDebugClick = () => {
+    const onPortalClick = ({ portal }) => {
 
+        if (!from) {
+            setFrom(portal)
+        }
+        else {
+            setConnections(c => [...c, { from, to: portal }])
+            setFrom(null)
+        }
     }
+
+    const cancel = () => {
+
+        setFrom(null)
+    }
+
+    const onDesktopClick = (e) => {
+
+        if (e.target == desktopRef.current) {
+            cancel()
+        }
+    }
+
+    console.log('connections', connections)
 
     return <Grommet theme={theme}>
         <Box fill="vertical" overflow="auto" align="center" flex="grow" justify="between" pad={{ "horizontal": "medium" }} direction="column">
@@ -59,27 +125,27 @@ function App() {
             </Header>
             <Box align="center" justify="start" flex="grow" fill="horizontal">
                 <Box align="center" justify="center" background={{ "color": "active-background" }} round="xsmall" fill="horizontal" pad="medium">
-                    {screens.length && <Desktop>
-                        {screens.map(s => <Screen key={s.id} {...s} />)}
-                    </Desktop>}
-                </Box>
-                <Box align="stretch" justify="start" direction="column" fill="horizontal" flex="grow" pad={{ "vertical": "medium" }}>
 
-                    {portals.length == 0
-                        ?
-                        <Box align="center" justify="center" direction="column" flex="grow" fill="horizontal" basis="small">
-                            <Text margin="medium" weight="bold" color="dark-4">No portals yet, why not create one?</Text>
-                            <Add size="large" color="dark-4" cursor="pointer" onClick />
-                        </Box>
-                        :
-                        <>
-                            <List data={[{ "name": "Eric", "count": 5 }, { "name": "Shimi", "count": 7 }]} />
-                            <Box align="center" justify="start" direction="row" fill="horizontal" flex="shrink" width="xsmall" pad={{ "vertical": "large" }}>
-                                <Button label="Add portal" icon={<Add />} primary size="medium" type="button" active={false} />
-                            </Box>
-                        </>
+                    {screens.length &&
+                        <Desktop onClick={onDesktopClick} ref={desktopRef}>
+                            {screens.map(s => <Screen key={s.id} {...s} />)}
+
+                            {portals.map(portal => {
+
+                                return <Portal
+                                    key={portal.id}
+                                    {...portal}
+                                    from={from}
+                                    connections={connections}
+                                    onClick={() => onPortalClick({ portal })}
+                                />
+                            })}
+                        </Desktop>
                     }
 
+                </Box>
+                <Box align="stretch" justify="start" direction="column" fill="horizontal" flex="grow" pad={{ "vertical": "medium" }}>
+                    <Button label="Add portal" icon={<Add />} primary size="medium" type="button" active={false} />
                 </Box>
             </Box>
         </Box>
