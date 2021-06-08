@@ -1,6 +1,7 @@
 import { screen, systemPreferences, Tray, Menu, app, BrowserWindow, IpcMain, ipcMain } from 'electron'
 import robotjs from 'robotjs'
 import path from 'path'
+import storage from 'electron-json-storage'
 
 class Api {
 
@@ -11,10 +12,13 @@ class Api {
 
     init() {
 
+        this.setupStorage()
         this.setupTray()
         this.setupIpc()
-        
+
         this.openMainWindow()
+
+        this.start()
     }
 
     setupTray() {
@@ -39,8 +43,13 @@ class Api {
 
     setupIpc() {
 
-        ipcMain.handle('getAllDisplays', async (event) => {
+        ipcMain.handle('getAllDisplays', async () => {
             return screen.getAllDisplays()
+        })
+
+        ipcMain.handle('getPortals', async () => {
+
+            return this.getSetting('portals')
         })
     }
 
@@ -71,26 +80,81 @@ class Api {
         }
     }
 
+    async savePortal() {
+        storage.set()
+
+    }
+
+    async setupStorage() {
+
+        if (!await this.hasSetting({ key: 'portals' })) {
+            await this.setSetting({ key: 'portals', data: [] })
+        }
+    }
+
+    async setSetting({ key, data }) {
+
+        return new Promise((resolve, reject) => {
+
+            storage.set(key, data, (err) => {
+                if (err) {
+                    reject(err)
+                }
+                else {
+                    resolve()
+                }
+            })
+        })
+    }
+
+    async hasSetting({ key }) {
+
+        return new Promise((resolve, reject) => {
+
+            storage.has(key, (err, hasKey) => {
+                if (err) {
+                    reject(err)
+                }
+                else {
+                    resolve(hasKey)
+                }
+            })
+        })
+    }
+
+    async getSetting({ key }) {
+
+        return new Promise((resolve, reject) => {
+
+            storage.get(key, (err, data) => {
+                if (err) {
+                    reject(err)
+                }
+                else {
+                    resolve(data)
+                }
+            })
+        })
+    }
+
     async getAllDisplays() {
 
         return screen.getAllDisplays()
     }
 
     async getPosition() {
-
         return robotjs.getMousePos()
     }
 
     async setPosition({ x, y }) {
 
         console.log('set position', arguments)
-
         return robotjs.moveMouse(x, y)
     }
 
     async start() {
 
-        console.log('started listening to mouse')
+        console.log('Setup mouse listener')
 
         setInterval(async () => {
 

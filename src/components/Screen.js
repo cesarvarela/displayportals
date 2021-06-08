@@ -9,6 +9,7 @@ const Wrapper = styled.div`
     box-sizing: border-box;
     font-size: 14px;
     overflow: hidden;
+    background-color: #fff;
 `
 
 const Portal = styled.div`

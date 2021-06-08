@@ -5,8 +5,7 @@ import Screen from './Screen'
 
 const Wrapper = styled.div`
     position: relative;
-    width: auto;
-    background: #fff;
+    width: 100%;
     padding-top: 33.333%;
     height: 0;
 `
