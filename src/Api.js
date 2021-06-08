@@ -49,7 +49,7 @@ class Api {
 
         ipcMain.handle('getConnections', async () => {
 
-            return this.getSetting('connections')
+            return this.getConnections()
         })
 
         ipcMain.handle('addConnection', async (_, connection) => {

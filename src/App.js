@@ -6,7 +6,7 @@ import Screen from './components/Screen'
 import { absolutePosition, normalizeScreens } from './lib/utils'
 import Portal from './components/Portal'
 
-const { getAllDisplays, addConnection } = window.mouseportals
+const { getAllDisplays, getConnections, addConnection } = window.mouseportals
 
 const theme = {
     global: {
@@ -38,7 +38,7 @@ function App() {
 
     useEffect(() => {
 
-        const load = async () => {
+        const loadScreens = async () => {
             const result = await getAllDisplays()
             const normalized = normalizeScreens({ screens: result })
             let portals = []
@@ -87,15 +87,30 @@ function App() {
             setScreens(normalized)
         }
 
+        const loadConnections = async () => {
+
+            const conenctions = await getConnections()
+            setConnections(conenctions)
+        }
+
+        const load = async () => {
+
+            await loadScreens()
+            await loadConnections()
+        }
+
         load()
+
     }, [])
 
-    const onPortalClick = ({ portal }) => {
+    const onPortalClick = async ({ portal }) => {
 
         if (!from) {
             setFrom(portal)
         }
         else {
+
+            addConnection({ from, to: portal })
             setConnections(c => [...c, { from, to: portal }])
             setFrom(null)
         }
