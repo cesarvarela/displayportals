@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Grommet, Button, Box, Header, List, Heading, Text } from 'grommet'
-import { Add } from 'grommet-icons'
 import Screen from './components/Screen'
-import { absolutePosition, normalizeScreens } from './lib/utils'
+import { absolutePosition } from './lib/utils'
 import Portal from './components/Portal'
 import Connection from './components/Connection'
 
@@ -40,8 +39,8 @@ function App() {
     useEffect(() => {
 
         const loadScreens = async () => {
-            const result = await getAllDisplays()
-            const normalized = normalizeScreens({ screens: result })
+
+            const normalized = await getAllDisplays()
             let portals = []
 
             for (let screen of normalized) {
@@ -141,14 +140,13 @@ function App() {
                 <Heading textAlign="start" level="2" size="medium">
                     Mouse portals
           </Heading>
-                <Button label="Button" />
             </Header>
             <Box align="center" justify="start" flex="grow" fill="horizontal">
                 <Box align="center" justify="center" background={{ "color": "active-background" }} round="xsmall" fill="horizontal" pad="medium">
 
                     {screens.length &&
                         <Desktop onClick={onDesktopClick} ref={desktopRef}>
-                            {screens.map(s => <Screen key={s.id} {...s} />)}
+                            {screens.map((s, i) => <Screen key={s.id} index={i} {...s} />)}
 
                             {portals.map(portal => {
 

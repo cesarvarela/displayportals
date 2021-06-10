@@ -18,9 +18,23 @@ const Debug = styled.div`
     display: none;
 `
 
+const Number = styled.div`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size:32px;
+    font-weight: bold;
+    color: #ccc;
+`
+
 const f = Math.floor
 
-export default function Screen({ id, bounds, percentBounds, absoluteBounds, scaleFactor, editMode }) {
+export default function Screen({ id, number, bounds, percentBounds, absoluteBounds, scaleFactor }) {
 
     const style = {
         left: percentage(percentBounds.x),
@@ -39,5 +53,8 @@ export default function Screen({ id, bounds, percentBounds, absoluteBounds, scal
             <br />
             {scaleFactor}
         </Debug>
+        <Number>
+            {number}
+        </Number>
     </Wrapper>
 }

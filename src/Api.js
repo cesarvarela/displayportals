@@ -1,7 +1,8 @@
-import { screen, systemPreferences, Tray, Menu, app, BrowserWindow, IpcMain, ipcMain, shell } from 'electron'
+import { screen, desktopCapturer, Tray, Menu, app, BrowserWindow, IpcMain, ipcMain, shell } from 'electron'
 import robotjs from 'robotjs'
 import path from 'path'
 import storage from 'electron-json-storage'
+import { normalizeScreens } from './lib/utils'
 
 class Api {
 
@@ -53,7 +54,7 @@ class Api {
     setupIpc() {
 
         ipcMain.handle('getAllDisplays', async () => {
-            return screen.getAllDisplays()
+            return this.getAllDisplays()
         })
 
         ipcMain.handle('getConnections', async () => {
@@ -178,7 +179,18 @@ class Api {
 
     async getAllDisplays() {
 
-        return screen.getAllDisplays()
+        const desktops = await desktopCapturer.getSources({ types: ['screen'] })
+        const displays = screen.getAllDisplays()
+        const screens = displays.map(display => {
+
+            const desktop = desktops.find(d => d.display_id == display.id)
+
+            return ({ ...display, name: desktop.name, number: desktop.name.split(' ')[1] })
+        })
+
+        const normalized = normalizeScreens({ screens })
+
+        return normalized
     }
 
     async getPosition() {

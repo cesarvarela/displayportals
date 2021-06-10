@@ -47,7 +47,7 @@ const Wrapper = styled.div`
     }
 `
 
-export default function Connection({ connections, from, to, onClick }) {
+export default function Connection({ from, to, onClick }) {
 
     const fromMiddle = { x: from.left + from.width / 2, y: from.top + from.height / 2 }
     const toMiddle = { x: to.left + to.width / 2, y: to.top + to.height / 2 }
