@@ -66,13 +66,12 @@ class Api {
 
     openMainWindow() {
 
-        if (this.mainWindow) {
-
+        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
             this.mainWindow.show()
         }
         else {
             // Create the browser window.
-            this.window = new BrowserWindow({
+            this.mainWindow = new BrowserWindow({
                 width: 800,
                 height: 600,
                 webPreferences: {
@@ -84,10 +83,10 @@ class Api {
             });
 
             // and load the index.html of the app.
-            this.window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+            this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
             // Open the DevTools.
-            this.window.webContents.openDevTools();
+            this.mainWindow.webContents.openDevTools();
         }
     }
 
