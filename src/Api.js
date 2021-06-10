@@ -1,4 +1,4 @@
-import { screen, systemPreferences, Tray, Menu, app, BrowserWindow, IpcMain, ipcMain } from 'electron'
+import { screen, systemPreferences, Tray, Menu, app, BrowserWindow, IpcMain, ipcMain, shell } from 'electron'
 import robotjs from 'robotjs'
 import path from 'path'
 import storage from 'electron-json-storage'
@@ -27,12 +27,21 @@ class Api {
 
         const menu = Menu.buildFromTemplate([
             {
-                label: 'Settings', click: () => {
+                label: 'Settings',
+                click: () => {
                     this.openMainWindow()
                 }
             },
             {
-                label: 'Quit', click: () => {
+                label: 'Open settings folder',
+                click: () => {
+
+                    shell.showItemInFolder(storage.getDefaultDataPath())
+                }
+            },
+            {
+                label: 'Quit',
+                click: () => {
                     app.quit()
                 }
             }
@@ -183,8 +192,6 @@ class Api {
     }
 
     async start() {
-
-        console.log('Setup mouse listener')
 
         setInterval(async () => {
 
