@@ -56,6 +56,12 @@ class Api {
 
             return this.addConnection(connection)
         })
+
+        ipcMain.handle('removeConnection', async (_, { connection }) => {
+
+            return this.removeConnection({ connection })
+        })
+
     }
 
     openMainWindow() {
@@ -94,8 +100,15 @@ class Api {
         await this.setSetting({ key: 'connections', data: connections })
     }
 
-    async removeConnection({ from, to }) {
+    async removeConnection({ connection }) {
 
+        let connections = await this.getSetting({ key: 'connections' })
+
+        connections = connections.filter(c => !(c.from.id == connection.from.id && c.to.id == connection.to.id))
+
+        await this.setSetting({ key: 'connections', data: connections })
+
+        return connections
     }
 
     async getConnections() {

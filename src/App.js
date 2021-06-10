@@ -5,8 +5,9 @@ import { Add } from 'grommet-icons'
 import Screen from './components/Screen'
 import { absolutePosition, normalizeScreens } from './lib/utils'
 import Portal from './components/Portal'
+import Connection from './components/Connection'
 
-const { getAllDisplays, getConnections, addConnection } = window.mouseportals
+const { getAllDisplays, getConnections, addConnection, removeConnection } = window.mouseportals
 
 const theme = {
     global: {
@@ -116,6 +117,12 @@ function App() {
         }
     }
 
+    const onTrashClick = async ({ connection }) => {
+
+        const connections = await removeConnection({ connection })
+        setConnections(connections)
+    }
+
     const cancel = () => {
 
         setFrom(null)
@@ -127,8 +134,6 @@ function App() {
             cancel()
         }
     }
-
-    console.log('connections', connections)
 
     return <Grommet theme={theme}>
         <Box fill="vertical" overflow="auto" align="center" flex="grow" justify="between" pad={{ "horizontal": "medium" }} direction="column">
@@ -155,12 +160,14 @@ function App() {
                                     onClick={() => onPortalClick({ portal })}
                                 />
                             })}
+
+                            {connections.map(connection => {
+
+                                return <Connection key={connection.from.id + connection.to.id} {...connection} onClick={() => onTrashClick({ connection })} />
+                            })}
                         </Desktop>
                     }
 
-                </Box>
-                <Box align="stretch" justify="start" direction="column" fill="horizontal" flex="grow" pad={{ "vertical": "medium" }}>
-                    <Button label="Add portal" icon={<Add />} primary size="medium" type="button" active={false} />
                 </Box>
             </Box>
         </Box>
