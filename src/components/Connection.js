@@ -49,8 +49,10 @@ const Wrapper = styled.div`
 
 export default function Connection({ from, to, onClick }) {
 
-    const fromMiddle = { x: from.left + from.width / 2, y: from.top + from.height / 2 }
-    const toMiddle = { x: to.left + to.width / 2, y: to.top + to.height / 2 }
+    console.log(from, to)
+
+    const fromMiddle = { x: from.x + from.width / 2, y: from.y + from.height / 2 }
+    const toMiddle = { x: to.x + to.width / 2, y: to.y + to.height / 2 }
 
     let direction = (fromMiddle.x < toMiddle.x && fromMiddle.y < toMiddle.y) || (toMiddle.x < fromMiddle.x && toMiddle.y < fromMiddle.y)
         ? 'left' : 'right'

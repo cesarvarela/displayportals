@@ -13,11 +13,6 @@ const Wrapper = styled.div`
     background-color: #fff;
 `
 
-const Debug = styled.div`
-    position: absolute;
-    display: none;
-`
-
 const Number = styled.div`
     position: absolute;
     display: flex;
@@ -32,27 +27,16 @@ const Number = styled.div`
     color: #ccc;
 `
 
-const f = Math.floor
-
-export default function Screen({ id, number, bounds, percentBounds, absoluteBounds, scaleFactor }) {
+export default function Screen({ id, number, bounds }) {
 
     const style = {
-        left: percentage(percentBounds.x),
-        top: percentage(percentBounds.y),
-        width: percentage(percentBounds.width),
-        height: percentage(percentBounds.height),
+        left: percentage(bounds.x),
+        top: percentage(bounds.y),
+        width: percentage(bounds.width),
+        height: percentage(bounds.height),
     }
 
     return <Wrapper style={style}>
-        <Debug>
-            {id}
-            <br />
-                electron: ({f(bounds.x)},{f(bounds.y)}) {f(bounds.width)}x{f(bounds.height)}
-            <br />
-                absolute: ({f(absoluteBounds.x)},{f(absoluteBounds.y)}) {f(absoluteBounds.width)}x{f(absoluteBounds.height)}
-            <br />
-            {scaleFactor}
-        </Debug>
         <Number>
             {number}
         </Number>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Grommet, Button, Box, Header, List, Heading, Text } from 'grommet'
 import Screen from './components/Screen'
-import { absolutePosition } from './lib/utils'
+import { absolutePosition, toPercentageConverter } from './lib/utils'
 import Portal from './components/Portal'
 import Connection from './components/Connection'
 
@@ -24,7 +24,7 @@ const theme = {
 const Desktop = styled.div`
     position: relative;
     width: 100%;
-    padding-top: 33.333%;
+    padding-top: 50%;
     height: 0;
 `
 
@@ -40,41 +40,36 @@ function App() {
 
         const loadScreens = async () => {
 
-            const normalized = await getAllDisplays()
+            const [normalized, max] = await getAllDisplays()
+            const toPercentage = toPercentageConverter({ screens: normalized, max })
             let portals = []
+            let screens = []
+
 
             for (let screen of normalized) {
 
+                screens.push({ ...screen, bounds: toPercentage({ ...screen.bounds }) })
+
                 const topPortal = {
                     id: `${screen.id}-top`,
-                    left: screen.percentBounds.x,
-                    top: screen.percentBounds.y,
-                    width: screen.percentBounds.width,
-                    height: screen.percentBounds.height / 10,
+                    ...toPercentage({ ...screen.bounds, height: 10 }),
                 }
 
                 const bottomPortal = {
                     id: `${screen.id}-bottom`,
-                    left: screen.percentBounds.x,
-                    top: screen.percentBounds.y + screen.percentBounds.height - screen.percentBounds.height / 10,
-                    width: screen.percentBounds.width,
-                    height: screen.percentBounds.height / 10,
+                    ...toPercentage({ ...screen.bounds, y: screen.bounds.y + screen.bounds.height - 10, height: 10 }),
+                    style: { transform: 'translateY(-100%)' }
                 }
 
                 const leftPortal = {
                     id: `${screen.id}-left`,
-                    left: screen.percentBounds.x,
-                    top: screen.percentBounds.y,
-                    width: screen.percentBounds.height / 30,
-                    height: screen.percentBounds.height,
+                    ...toPercentage({ ...screen.bounds, width: 10 }),
                 }
 
                 const rightPortal = {
                     id: `${screen.id}-right`,
-                    left: screen.percentBounds.x + screen.percentBounds.width - screen.percentBounds.height / 30,
-                    top: screen.percentBounds.y,
-                    width: screen.percentBounds.height / 30,
-                    height: screen.percentBounds.height,
+                    ...toPercentage({ ...screen.bounds, x: screen.bounds.x + screen.bounds.width - 10, width: 10 }),
+                    style: { transform: 'translateX(-100%)' }
                 }
 
                 portals.push(leftPortal)
@@ -83,8 +78,11 @@ function App() {
                 portals.push(bottomPortal)
             }
 
+            console.log(portals)
+            console.log(screens)
+
             setPortals(portals)
-            setScreens(normalized)
+            setScreens(screens)
         }
 
         const loadConnections = async () => {

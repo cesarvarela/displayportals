@@ -6,16 +6,18 @@ const Wrapper = styled.div`
     background: ${({ color }) => color == 'blue' ? '#2ABBE8' : color == 'orange' ? '#F79321' : '#ccc'};
     position: absolute;
     opacity: .3;
+    min-height: 10px;
+    min-width: 10px;
     &:hover {
         opacity: 1;
     }
 `
 
-export default function Portal({ connections, id, from, left, top, width, height, onClick }) {
+export default function Portal({ connections, id, from, x, y, width, height, onClick, style = {} }) {
 
-    const style = {
-        left: percentage(left),
-        top: percentage(top),
+    const position = {
+        left: percentage(x),
+        top: percentage(y),
         width: percentage(width),
         height: percentage(height),
     }
@@ -26,17 +28,17 @@ export default function Portal({ connections, id, from, left, top, width, height
 
         const color = connections.some(c => (c.from.id == id)) ? 'orange' : 'blue'
 
-        return <Wrapper color={color} style={{ ...style, opacity: 1, cursor: 'default', disabled: true }} />
+        return <Wrapper color={color} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
     }
 
     const selected = from && from.id == id
 
     if (selected) {
 
-        return <Wrapper color={'orange'} style={{ ...style, opacity: 1, cursor: 'default', disabled: true }} />
+        return <Wrapper color={'orange'} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
     }
 
     const color = from ? 'blue' : 'orange'
 
-    return <Wrapper color={color} style={{ ...style, cursor: 'pointer' }} onClick={onClick} />
+    return <Wrapper color={color} style={{ ...position, ...style, cursor: 'pointer' }} onClick={onClick} />
 }

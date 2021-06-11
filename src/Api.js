@@ -2,7 +2,6 @@ import { screen, desktopCapturer, Tray, Menu, app, BrowserWindow, IpcMain, ipcMa
 import robotjs from 'robotjs'
 import path from 'path'
 import storage from 'electron-json-storage'
-import { normalizeScreens } from './lib/utils'
 
 class Api {
 
@@ -181,16 +180,46 @@ class Api {
 
         const desktops = await desktopCapturer.getSources({ types: ['screen'] })
         const displays = screen.getAllDisplays()
-        const screens = displays.map(display => {
+        const primary = screen.getPrimaryDisplay()
+        const min = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
+        const max = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
 
-            const desktop = desktops.find(d => d.display_id == display.id)
+        let normalized = displays.map(display => {
 
-            return ({ ...display, name: desktop.name, number: desktop.name.split(' ')[1] })
+            const { id, name } = desktops.find(d => d.display_id == display.id)
+
+            const bounds = {
+                x: (display.bounds.x),
+                y: (display.bounds.y),
+                width: Math.floor(display.bounds.width),
+                height: Math.floor(display.bounds.height),
+                scaleFactor: display.scaleFactor,
+            }
+
+            min.x = Math.min(bounds.x, min.x)
+            min.y = Math.min(bounds.y, min.y)
+
+            return ({
+                id,
+                name,
+                bounds,
+                number: name.split(' ')[1]
+            })
         })
 
-        const normalized = normalizeScreens({ screens })
+        min.x = Math.abs(min.x)
+        min.y = Math.abs(min.y)
 
-        return normalized
+        normalized = normalized.map(d => ({ ...d, bounds: { ...d.bounds, x: d.bounds.x + min.x, y: d.bounds.y + min.y } }))
+
+        for (const screen of normalized) {
+            const { bounds } = screen
+
+            max.x = Math.max(bounds.x + bounds.width, max.x)
+            max.y = Math.max(bounds.y + bounds.height, max.y)
+        }
+
+        return [normalized, max, min]
     }
 
     async getPosition() {
