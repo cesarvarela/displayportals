@@ -2,6 +2,7 @@ import { screen, desktopCapturer, Tray, Menu, app, BrowserWindow, IpcMain, ipcMa
 import robotjs from 'robotjs'
 import path from 'path'
 import storage from 'electron-json-storage'
+import nativeDisplays from "displays"
 
 class Api {
 
@@ -191,31 +192,28 @@ class Api {
 
     async detectDisplays() {
 
-        const desktops = await desktopCapturer.getSources({ types: ['screen'] })
-        const displays = screen.getAllDisplays()
+        const displays = nativeDisplays()
         const min = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
         const max = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
 
-        let normalized = displays.map(display => {
-
-            const { id, name } = desktops.find(d => d.display_id == display.id)
+        let normalized = displays.map((display, index) => {
 
             const bounds = {
-                x: (display.bounds.x),
-                y: (display.bounds.y),
-                width: Math.floor(display.bounds.width),
-                height: Math.floor(display.bounds.height),
-                scaleFactor: display.scaleFactor,
+                x: display.left,
+                y: display.top,
+                width: display.width,
+                height: display.height,
+                scaleFactor: 1,
             }
 
             min.x = Math.min(bounds.x, min.x)
             min.y = Math.min(bounds.y, min.y)
 
             return ({
-                id,
-                name,
+                id: index,
+                name: index,
                 bounds,
-                number: name.split(' ')[1]
+                number: index
             })
         })
 
@@ -248,6 +246,9 @@ class Api {
     async start() {
 
         const connections = await this.getConnections()
+        const primary = screen.getPrimaryDisplay()
+
+        console.log(displays())
 
         setInterval(async () => {
 
