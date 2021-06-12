@@ -2,11 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Grommet, Button, Box, Header, List, Heading, Text } from 'grommet'
 import Screen from './components/Screen'
-import { absolutePosition, toPercentageConverter } from './lib/utils'
 import Portal from './components/Portal'
 import Connection from './components/Connection'
 
-const { getAllDisplays, getConnections, addConnection, removeConnection } = window.mouseportals
+const { getDisplays, getConnections, addConnection, removeConnection } = window.mouseportals
 
 const theme = {
     global: {
@@ -40,35 +39,33 @@ function App() {
 
         const loadScreens = async () => {
 
-            const [normalized, max] = await getAllDisplays()
-            const toPercentage = toPercentageConverter({ screens: normalized, max })
+            const normalized = await getDisplays()
             let portals = []
             let screens = []
 
-
             for (let screen of normalized) {
 
-                screens.push({ ...screen, bounds: toPercentage({ ...screen.bounds }) })
+                screens.push({ ...screen })
 
                 const topPortal = {
                     id: `${screen.id}-top`,
-                    ...toPercentage({ ...screen.bounds, height: 10 }),
+                    bounds: { ...screen.bounds, height: 10 },
                 }
 
                 const bottomPortal = {
                     id: `${screen.id}-bottom`,
-                    ...toPercentage({ ...screen.bounds, y: screen.bounds.y + screen.bounds.height - 10, height: 10 }),
+                    bounds: { ...screen.bounds, y: screen.bounds.y + screen.bounds.height - 10, height: 10 },
                     style: { transform: 'translateY(-100%)' }
                 }
 
                 const leftPortal = {
                     id: `${screen.id}-left`,
-                    ...toPercentage({ ...screen.bounds, width: 10 }),
+                    bounds: { ...screen.bounds, width: 10 },
                 }
 
                 const rightPortal = {
                     id: `${screen.id}-right`,
-                    ...toPercentage({ ...screen.bounds, x: screen.bounds.x + screen.bounds.width - 10, width: 10 }),
+                    bounds: { ...screen.bounds, x: screen.bounds.x + screen.bounds.width - 10, width: 10 },
                     style: { transform: 'translateX(-100%)' }
                 }
 
@@ -78,11 +75,8 @@ function App() {
                 portals.push(bottomPortal)
             }
 
-            console.log(portals)
-            console.log(screens)
-
             setPortals(portals)
-            setScreens(screens)
+            setScreens(normalized)
         }
 
         const loadConnections = async () => {

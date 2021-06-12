@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { percentage } from '../lib/utils'
 import { Trash as TrashIcon } from 'grommet-icons'
+import usePercentage from '../lib/usePercentage'
 
 const Trash = styled.div`
     position: absolute;
@@ -49,19 +49,30 @@ const Wrapper = styled.div`
 
 export default function Connection({ from, to, onClick }) {
 
-    console.log(from, to)
+    const toPercentage = usePercentage()
 
-    const fromMiddle = { x: from.x + from.width / 2, y: from.y + from.height / 2 }
-    const toMiddle = { x: to.x + to.width / 2, y: to.y + to.height / 2 }
+    if (!toPercentage) {
+        return null
+    }
+
+    const fromMiddle = { x: from.bounds.x + from.bounds.width / 2, y: from.bounds.y + from.bounds.height / 2 }
+    const toMiddle = { x: to.bounds.x + to.bounds.width / 2, y: to.bounds.y + to.bounds.height / 2 }
 
     let direction = (fromMiddle.x < toMiddle.x && fromMiddle.y < toMiddle.y) || (toMiddle.x < fromMiddle.x && toMiddle.y < fromMiddle.y)
         ? 'left' : 'right'
 
+    const { x, y, width, height } = toPercentage({
+        x: Math.min(fromMiddle.x, toMiddle.x),
+        y: Math.min(fromMiddle.y, toMiddle.y),
+        width: Math.abs(toMiddle.x - fromMiddle.x),
+        height: Math.abs(toMiddle.y - fromMiddle.y),
+    })
+    
     const style = {
-        left: percentage(Math.min(fromMiddle.x, toMiddle.x)),
-        top: percentage(Math.min(fromMiddle.y, toMiddle.y)),
-        width: percentage(Math.abs(toMiddle.x - fromMiddle.x)),
-        height: percentage(Math.abs(toMiddle.y - fromMiddle.y)),
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${width}%`,
+        height: `${height}%`,
     }
 
     if (toMiddle.x == fromMiddle.x) {

@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
-import { percentage } from '../lib/utils'
+import usePercentage from '../lib/usePercentage'
+import { toPercentageConverter } from '../lib/utils'
 
 const Wrapper = styled.div`
     background: ${({ color }) => color == 'blue' ? '#2ABBE8' : color == 'orange' ? '#F79321' : '#ccc'};
@@ -12,14 +13,23 @@ const Wrapper = styled.div`
         opacity: 1;
     }
 `
+const { getAllDisplays } = window.mouseportals
 
-export default function Portal({ connections, id, from, x, y, width, height, onClick, style = {} }) {
+export default function Portal({ connections, id, from, bounds, onClick, style = {} }) {
+
+    const toPercentage = usePercentage()
+
+    if (!toPercentage) {
+        return null
+    }
+
+    const { x, y, width, height } = toPercentage(bounds)
 
     const position = {
-        left: percentage(x),
-        top: percentage(y),
-        width: percentage(width),
-        height: percentage(height),
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${width}%`,
+        height: `${height}%`,
     }
 
     const connected = connections.some(c => (c.from.id == id || c.to.id == id))

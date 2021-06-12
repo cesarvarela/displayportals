@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import usePercentage from '../lib/usePercentage'
 import { percentage } from '../lib/utils'
 
 const Wrapper = styled.div`
@@ -29,11 +30,19 @@ const Number = styled.div`
 
 export default function Screen({ id, number, bounds }) {
 
+    const toPercentage = usePercentage()
+
+    if (!toPercentage) {
+        return null
+    }
+
+    const { x, y, width, height } = toPercentage(bounds)
+
     const style = {
-        left: percentage(bounds.x),
-        top: percentage(bounds.y),
-        width: percentage(bounds.width),
-        height: percentage(bounds.height),
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${width}%`,
+        height: `${height}%`,
     }
 
     return <Wrapper style={style}>

@@ -8,10 +8,12 @@ class Api {
     constructor() {
         this.mainWindow = null
         this.tray = null
+        this.displays = null
+        this.dekstopSize = null
     }
 
     init() {
-
+        this.setupDisplays()
         this.setupStorage()
         this.setupTray()
         this.setupIpc()
@@ -19,6 +21,13 @@ class Api {
         this.openMainWindow()
 
         this.start()
+    }
+
+    async setupDisplays() {
+        const [displays, size] = await this.detectDisplays()
+
+        this.displays = displays
+        this.dekstopSize = size
     }
 
     setupTray() {
@@ -52,8 +61,12 @@ class Api {
 
     setupIpc() {
 
-        ipcMain.handle('getAllDisplays', async () => {
-            return this.getAllDisplays()
+        ipcMain.handle('getDisplays', async () => {
+            return this.displays
+        })
+
+        ipcMain.handle('getDesktopSize', async () => {
+            return this.dekstopSize
         })
 
         ipcMain.handle('getConnections', async () => {
@@ -176,11 +189,10 @@ class Api {
         })
     }
 
-    async getAllDisplays() {
+    async detectDisplays() {
 
         const desktops = await desktopCapturer.getSources({ types: ['screen'] })
         const displays = screen.getAllDisplays()
-        const primary = screen.getPrimaryDisplay()
         const min = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
         const max = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
 
@@ -219,8 +231,9 @@ class Api {
             max.y = Math.max(bounds.y + bounds.height, max.y)
         }
 
-        return [normalized, max, min]
+        return [normalized, max]
     }
+
 
     async getPosition() {
         return robotjs.getMousePos()
@@ -233,6 +246,8 @@ class Api {
     }
 
     async start() {
+
+        const connections = await this.getConnections()
 
         setInterval(async () => {
 
