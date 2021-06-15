@@ -13,6 +13,7 @@ class Api {
         this.desktopSize = null
         this.desktopOffset = null
         this.lastPortal = null
+        this.interval = null
     }
 
     init() {
@@ -122,7 +123,13 @@ class Api {
 
         connections.push({ from, to })
 
+        console.log("Added conection")
+
         await this.setSetting({ key: 'connections', data: connections })
+
+        await this.restart()
+
+        return connections
     }
 
     async removeConnection({ connection }) {
@@ -132,6 +139,10 @@ class Api {
         connections = connections.filter(c => !(c.from.id == connection.from.id && c.to.id == connection.to.id))
 
         await this.setSetting({ key: 'connections', data: connections })
+
+        console.log("Removed conection")
+
+        await this.restart()
 
         return connections
     }
@@ -235,9 +246,22 @@ class Api {
         return [normalized, max, min]
     }
 
+    async restart() {
+
+        console.log("Restarting...")
+
+        await this.start()
+
+        console.log("Restarted")
+    }
+
     async start() {
 
+        console.log("Starting...")
+
         const connections = await this.getConnections()
+
+        console.log(`Loaded ${connections.length} connections.`)
 
         const contains = ({ bounds, pos: { x, y } }) => {
 
@@ -264,7 +288,12 @@ class Api {
             return width > height ? 'horizontal' : 'vertical'
         }
 
-        setInterval(async () => {
+        if (this.interval !== null) {
+
+            clearInterval(this.interval)
+        }
+
+        this.interval = setInterval(async () => {
 
             const pos = abosolutePos()
 

@@ -102,8 +102,8 @@ function App() {
         }
         else {
 
-            addConnection({ from, to: portal })
-            setConnections(c => [...c, { from, to: portal }])
+            const connections = await addConnection({ from, to: portal })
+            setConnections(connections)
             setFrom(null)
         }
     }
