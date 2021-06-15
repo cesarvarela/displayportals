@@ -295,7 +295,10 @@ class Api {
                 const fromDirection = direction(from)
                 const toDirection = direction(to);
 
-                switch (`${fromDirection}:${toDirection}`) {
+                const result = `${fromDirection}:${toDirection}`
+
+                switch (result) {
+
 
                     case 'vertical:horizontal': {
 
@@ -304,7 +307,7 @@ class Api {
 
                         relativeSet(target)
                     }
-                        break;
+                        break
 
                     case 'horizontal:vertical': {
 
@@ -314,7 +317,27 @@ class Api {
                         relativeSet(target)
                     }
 
-                        break;
+                        break
+
+                    case 'vertical:vertical': {
+
+                        const ratio = Math.abs((from.bounds.y - pos.y) / from.bounds.height)
+                        const target = { x: to.bounds.x, y: Math.round(to.bounds.y + to.bounds.height * ratio) }
+
+                        relativeSet(target)
+                    }
+
+                        break
+
+                    case 'horizontal:horizontal': {
+
+                        const ratio = Math.abs((from.bounds.x - pos.x) / from.bounds.width)
+                        const target = { x: Math.round(to.bounds.x + to.bounds.width * ratio), y: to.bounds.y }
+
+                        relativeSet(target)
+                    }
+
+                        break
                 }
 
                 return
