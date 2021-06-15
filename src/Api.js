@@ -12,6 +12,7 @@ class Api {
         this.displays = null
         this.desktopSize = null
         this.desktopOffset = null
+        this.lastPortal = null
     }
 
     init() {
@@ -254,10 +255,8 @@ class Api {
 
             const rel = { x: x - this.desktopOffset.x, y: y - this.desktopOffset.y }
 
-            console.log('relative pos', rel)
-
-            // robotjs.moveMouse(rel.x, rel.y)
-            robotjs.moveMouse(4500, 355)
+            robotjs.moveMouse(rel.x, rel.y)
+            robotjs.moveMouse(rel.x, rel.y)
         }
 
         const direction = ({ bounds: { x, y, width, height } }) => {
@@ -269,44 +268,59 @@ class Api {
 
             const pos = abosolutePos()
 
-            console.log(robotjs.getMousePos())
+            let from = null
+            let to = null
 
             for (const connection of connections) {
 
-                const { from, to } = connection
-
                 if (contains({ bounds: connection.from.bounds, pos })) {
-
-                    const fromDirection = direction(connection.from)
-                    const toDirection = direction(connection.to);
-
-                    switch (`${fromDirection}:${toDirection}`) {
-
-                        case 'vertical:horizontal':
-
-                            const ratio = 1 - Math.abs((from.bounds.y - pos.y) / from.bounds.height)
-                            const target = { x: Math.round(to.bounds.x + to.bounds.width * ratio), y: to.bounds.y + to.bounds.height + 1 }
-
-                            // console.log(pos, fromDirection, toDirection, ratio, target)
-                            relativeSet(target)
-                            relativeSet(target)
-                            // relativeSet({ x: 7365, y: 3526 })
-
-                            break;
-
-                        case 'horizontal:vertical':
-
-                            break;
-                    }
+                    from = connection.from
+                    to = connection.to
+                    break
                 }
                 else if (contains({ bounds: connection.to.bounds, pos })) {
-
-                    // console.log(pos)
-                    // relativeSet(connection.from.bounds)
+                    from = connection.to
+                    to = connection.from
+                    break
                 }
             }
 
-        }, 100); 0
+            if (from == null && to == null) {
+                this.lastPortal = null
+            }
+
+            if (this.lastPortal == null && from && to) {
+
+                this.lastPortal = to
+                const fromDirection = direction(from)
+                const toDirection = direction(to);
+
+                switch (`${fromDirection}:${toDirection}`) {
+
+                    case 'vertical:horizontal': {
+
+                        const ratio = 1 - Math.abs((from.bounds.y - pos.y) / from.bounds.height)
+                        const target = { x: Math.round(to.bounds.x + to.bounds.width * ratio), y: to.bounds.y }
+
+                        relativeSet(target)
+                    }
+                        break;
+
+                    case 'horizontal:vertical': {
+
+                        const ratio = 1 - Math.abs((from.bounds.x - pos.x) / from.bounds.width)
+                        const target = { x: to.bounds.x, y: Math.round(to.bounds.y + to.bounds.height * ratio) }
+
+                        relativeSet(target)
+                    }
+
+                        break;
+                }
+
+                return
+            }
+
+        }, 0);
     }
 }
 
