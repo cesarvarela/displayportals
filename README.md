@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/images/logo.png" width="125">
+  <img src="src/images/logo-trimmed.png" width="125">
 </p>
 
 <div align="center">
@@ -7,3 +7,13 @@
   <p>
 Display Portals is a Windows-only (is it necessary on other platforms?) app built on Electron that makes your life easier when dealing with multiple display setups, especially when combining different DPi screens or unique display arrangements. In other words: <b>say goodbye to virtual walls!</b></P>
 </div>
+
+## Features
+
+- Teleport the cursor from the edges of your displays
+
+## To-Do
+
+- [ ] Setup an action to make automatic releases
+- [ ] Find a better way to deal with Virtual Walls instead of calling SetCursorPos twice
+- [ ]  Use velocity and inertia to determine collisions with portals
