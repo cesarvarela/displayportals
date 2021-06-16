@@ -1,3 +1,4 @@
+import { Desktop } from 'grommet-icons'
 import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import usePercentage from '../lib/usePercentage'
@@ -10,12 +11,12 @@ const Wrapper = styled.div`
     min-height: 10px;
     min-width: 10px;
     &:hover {
-        opacity: 1;
+        opacity: 1 !important;
     }
+    transition: all .5s;
 `
-const { getAllDisplays } = window.mouseportals
 
-export default function Portal({ connections, id, from, bounds, onClick, style = {} }) {
+function Portal({ connections, id, from, bounds, onClick, style = {}, className }) {
 
     const toPercentage = usePercentage()
 
@@ -38,17 +39,19 @@ export default function Portal({ connections, id, from, bounds, onClick, style =
 
         const color = connections.some(c => (c.from.id == id)) ? 'orange' : 'blue'
 
-        return <Wrapper color={color} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
+        return <Wrapper className={className} color={color} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
     }
 
     const selected = from && from.id == id
 
     if (selected) {
 
-        return <Wrapper color={'orange'} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
+        return <Wrapper className={className} color={'orange'} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
     }
 
     const color = from ? 'blue' : 'orange'
 
-    return <Wrapper color={color} style={{ ...position, ...style, cursor: 'pointer' }} onClick={onClick} />
+    return <Wrapper className={className} color={color} style={{ ...position, ...style, cursor: 'pointer' }} onClick={onClick} />
 }
+
+export default styled(Portal)``

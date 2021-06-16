@@ -1,30 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Grommet, Button, Box, Header, List, Heading, Text } from 'grommet'
+import { Grommet, Button, Box, List, Heading, Text } from 'grommet'
 import Screen from './components/Screen'
 import Portal from './components/Portal'
 import Connection from './components/Connection'
+import theme from './theme'
+import Header from './components/Header'
 
 const { getDisplays, getConnections, addConnection, removeConnection } = window.mouseportals
-
-const theme = {
-    global: {
-        colors: {
-            brand: '#228BE6',
-        },
-        font: {
-            family: 'Helvetica',
-            size: '18px',
-            height: '20px',
-        },
-    },
-}
 
 const Desktop = styled.div`
     position: relative;
     width: 100%;
     padding-top: 50%;
     height: 0;
+    ${Portal} {
+        opacity: 0;
+    }
+    &:hover {
+        ${Portal} {
+            opacity: .5;
+        }
+    }
 `
 
 function App() {
@@ -126,15 +123,14 @@ function App() {
         }
     }
 
-    return <Grommet theme={theme}>
-        <Box fill="vertical" overflow="auto" align="center" flex="grow" justify="between" pad={{ "horizontal": "medium" }} direction="column">
-            <Header align="center" direction="row" justify="between" gap="medium" fill="horizontal">
-                <Heading textAlign="start" level="2" size="medium">
-                    Mouse portals
-          </Heading>
-            </Header>
-            <Box align="center" justify="start" flex="grow" fill="horizontal">
-                <Box align="center" justify="center" background={{ "color": "active-background" }} round="xsmall" fill="horizontal" pad="medium">
+    return <Grommet full theme={theme}>
+
+        <Box overflow="auto" align="center" justify="start" pad={{ "horizontal": "medium" }} direction="column" background={{ "color": "background-back" }} fill="vertical">
+
+            <Header />
+
+            <Box align="center" justify="start" flex="grow" fill="horizontal" >
+                <Box align="center" justify="center" background={{ color: "background-front" }} round="xsmall" fill="horizontal" pad="medium">
 
                     {screens.length &&
                         <Desktop onClick={onDesktopClick} ref={desktopRef}>
@@ -161,7 +157,7 @@ function App() {
                 </Box>
             </Box>
         </Box>
-    </Grommet>
+    </Grommet >
 }
 
 export default App

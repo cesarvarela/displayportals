@@ -1,47 +1,42 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Button } from 'grommet'
 import { Trash as TrashIcon } from 'grommet-icons'
 import usePercentage from '../lib/usePercentage'
 
-const Trash = styled.div`
+const TrashWrapper = styled.div`
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #fff;
-    border-radius: 100%;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     pointer-events: auto;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    border: 2px solid #ccc;
+`
+
+const Trash = styled(Button)`
+    background-color: #e8e8e8;
+    padding: 6px;
+    border-radius: 12px;
+    svg {
+        width: 18px;
+        height: 18px;
+    }
 `
 
 const Wrapper = styled.div`
     position: absolute;
     pointer-events: none;
-    min-width: 1%;
-    min-height: 1%;
-    svg {
+    & > svg {
         position: absolute;
         line {
-            stroke: #ccc;
+            stroke: #999999;
             stroke-width: 4;
             position: absolute;
         }
     }
     &:hover {
-        ${Trash} {
-            border: 2px solid #333;
-        }
-
-        svg {
+        & > svg {
             line {
-                stroke: #333;
+                stroke: #666666;
             }
         }
     }
@@ -67,7 +62,7 @@ export default function Connection({ from, to, onClick }) {
         width: Math.abs(toMiddle.x - fromMiddle.x),
         height: Math.abs(toMiddle.y - fromMiddle.y),
     })
-    
+
     const style = {
         left: `${x}%`,
         top: `${y}%`,
@@ -107,8 +102,8 @@ export default function Connection({ from, to, onClick }) {
                 <line x1="50%" y1="0" x2="50%" y2="100%" />
             </svg>
         }
-        <Trash onClick={onClick} >
-            <TrashIcon className="icon" size="small" />
-        </Trash>
+        <TrashWrapper>
+            <Trash icon={<TrashIcon />} type="button" onClick={onClick} plain={false} color="dark-4" size="small" />
+        </TrashWrapper>
     </Wrapper>
 }
