@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/images/logo-trimmed.png" width="125">
+  <img src="data/logo.png" width="125">
 </p>
 
 <div align="center">
@@ -7,6 +7,10 @@
   <p>
 Display Portals is a Windows-only (is it necessary on other platforms?) app built on Electron that makes your life easier when dealing with multiple display setups, especially when combining different DPi screens or unique display arrangements. In other words: <b>say goodbye to virtual walls!</b></P>
 </div>
+
+## Screnshots
+
+<img src="data/app.gif">
 
 ## Features
 
