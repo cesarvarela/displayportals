@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="data/logo.png" width="125">
+  <img src="https://github.com/cesarvarela/displayportals/blob/44a024d96b08ad0ba20eca9a37a30e031b3b9bec/docs/logo.png" width="125">
 </p>
 
 <div align="center">
@@ -10,7 +10,7 @@ Display Portals is a Windows-only (is it necessary on other platforms?) app buil
 
 ## Screnshots
 
-<img src="data/app.gif">
+<img src="https://github.com/cesarvarela/displayportals/blob/44a024d96b08ad0ba20eca9a37a30e031b3b9bec/docs/app.gif">
 
 ## Features
 
