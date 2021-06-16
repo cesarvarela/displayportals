@@ -327,7 +327,7 @@ class Api {
                 const fromDirection = direction(from)
                 const toDirection = direction(to);
 
-                const result = `${fromDirection}: ${toDirection} `
+                const result = `${fromDirection}:${toDirection}`
 
                 switch (result) {
 
