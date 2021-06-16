@@ -101,6 +101,7 @@ class Api {
             this.mainWindow = new BrowserWindow({
                 width: 800,
                 height: 600,
+                icon: path.join(__dirname, 'win-icon.png'),
                 webPreferences: {
                     nodeIntegration: true,
                     contextIsolation: true,
@@ -109,11 +110,13 @@ class Api {
                 },
             });
 
+            this.mainWindow.setMenu(null)
+
             // and load the index.html of the app.
-            this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+            this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
             // Open the DevTools.
-            this.mainWindow.webContents.openDevTools();
+            this.mainWindow.webContents.openDevTools()
         }
     }
 
@@ -224,10 +227,10 @@ class Api {
             min.y = Math.min(bounds.y, min.y)
 
             return ({
-                id: index,
-                name: index,
+                id: `display-${index + 1}`,
+                name: `${index + 1}`,
                 bounds,
-                number: index
+                number: `${index + 1}`,
             })
         })
 
@@ -324,7 +327,7 @@ class Api {
                 const fromDirection = direction(from)
                 const toDirection = direction(to);
 
-                const result = `${fromDirection}:${toDirection}`
+                const result = `${fromDirection}: ${toDirection} `
 
                 switch (result) {
 
