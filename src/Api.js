@@ -1,6 +1,5 @@
-import { screen, desktopCapturer, Tray, Menu, app, BrowserWindow, IpcMain, ipcMain, shell } from 'electron'
-import robotjs from 'robotjs'
-import path, { posix } from 'path'
+import { Tray, Menu, app, BrowserWindow, ipcMain, shell } from 'electron'
+import path from 'path'
 import storage from 'electron-json-storage'
 import nativeDisplays from "displays"
 
@@ -94,10 +93,11 @@ class Api {
     openMainWindow() {
 
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+
             this.mainWindow.show()
         }
         else {
-            // Create the browser window.
+
             this.mainWindow = new BrowserWindow({
                 width: 800,
                 height: 600,
@@ -111,12 +111,12 @@ class Api {
             });
 
             this.mainWindow.setMenu(null)
-
-            // and load the index.html of the app.
             this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
-            // Open the DevTools.
-            this.mainWindow.webContents.openDevTools()
+            if (!app.isPackaged) {
+
+                this.mainWindow.webContents.openDevTools()
+            }
         }
     }
 
@@ -220,7 +220,6 @@ class Api {
                 y: display.top,
                 width: display.width,
                 height: display.height,
-                scaleFactor: 1,
             }
 
             min.x = Math.min(bounds.x, min.x)
@@ -259,6 +258,8 @@ class Api {
     }
 
     async start() {
+
+        const robotjs = require('robotjs')
 
         console.log("Starting...")
 

@@ -1,6 +1,6 @@
 {
-  "name": "mouseportals",
-  "productName": "mouseportals",
+  "name": "displayportals",
+  "productName": "Display Portals",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".webpack/main",
@@ -19,12 +19,14 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "asar": true
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "mouseportals"
+            "name": "displayportals"
           }
         },
         {
@@ -61,6 +63,9 @@
               ]
             }
           }
+        ],
+        [
+          "@electron-forge/plugin-auto-unpack-natives"
         ]
       ]
     }
@@ -73,6 +78,7 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.55",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.55",
     "@electron-forge/maker-zip": "^6.0.0-beta.55",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.0.0-beta.57",
     "@electron-forge/plugin-webpack": "6.0.0-beta.54",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "babel-loader": "^8.2.2",

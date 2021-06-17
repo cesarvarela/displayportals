@@ -1,4 +1,4 @@
-const { app, BrowserWindow, contextBridge, screen, ipcMain, Tray } = require('electron');
+const { app } = require('electron');
 import Api from './Api'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
