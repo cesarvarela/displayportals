@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "rebuild": "electron-rebuild"
   },
   "keywords": [],
   "author": {
@@ -19,9 +20,7 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {
-        "asar": true
-      },
+      "packagerConfig": {},
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -63,9 +62,6 @@
               ]
             }
           }
-        ],
-        [
-          "@electron-forge/plugin-auto-unpack-natives"
         ]
       ]
     }
@@ -92,6 +88,7 @@
     "@electron/remote": "^1.1.0",
     "displays": "^1.1.4",
     "electron-json-storage": "^4.5.0",
+    "electron-log": "^4.3.5",
     "electron-squirrel-startup": "^1.0.0",
     "grommet": "^2.17.2",
     "grommet-icons": "^4.5.0",
