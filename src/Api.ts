@@ -2,7 +2,7 @@ import { Tray, Menu, app, BrowserWindow, ipcMain, shell } from 'electron'
 import path from 'path'
 import storage from 'electron-json-storage'
 import nativeDisplays from "displays"
-import { ISetting, IBounds, INativeDisplay, IDisplay, IConnection, IPosition } from './interfaces'
+import { ISetting, IBounds, INativeDisplay, IDisplay, IConnection, IPosition, IPortal } from './interfaces'
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -11,10 +11,10 @@ class Api {
 
     private mainWindow: BrowserWindow = null
     private tray: Tray = null
-    private displays: any[] = null
-    private desktopSize: any = null
-    private desktopOffset: any = null
-    private lastPortal: any = null
+    private displays: IDisplay[] = null
+    private desktopSize: IPosition = null
+    private desktopOffset: IPosition = null
+    private lastPortal: IPortal = null
     private interval: NodeJS.Timer = null
 
     init(): void {
@@ -95,7 +95,7 @@ class Api {
 
     }
 
-    openMainWindow() {
+    openMainWindow(): void {
 
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
 
@@ -131,7 +131,7 @@ class Api {
 
     async addConnection({ from, to }: IConnection): Promise<IConnection[]> {
 
-        const connections = await this.getSetting({ key: 'connections' })
+        const connections = await this.getSetting<IConnection[]>({ key: 'connections' })
 
         connections.push({ from, to })
 
@@ -146,7 +146,7 @@ class Api {
 
     async removeConnection({ connection }: { connection: IConnection }): Promise<IConnection[]> {
 
-        let connections = await this.getSetting({ key: 'connections' })
+        let connections = await this.getSetting<IConnection[]>({ key: 'connections' })
 
         connections = connections.filter((c: IConnection) => !(c.from.id == connection.from.id && c.to.id == connection.to.id))
 
@@ -171,11 +171,11 @@ class Api {
         }
     }
 
-    async setSetting({ key, data }: ISetting): Promise<boolean> {
+    async setSetting<T extends unknown>({ key, data }: { key: string, data: T }): Promise<boolean> {
 
         return new Promise((resolve, reject) => {
 
-            storage.set(key, data, (err: Error) => {
+            storage.set(key, data as never, (err: Error) => {
                 if (err) {
                     reject(err)
                 }
@@ -201,11 +201,11 @@ class Api {
         })
     }
 
-    async getSetting({ key }: ISetting): Promise<any> {
+    async getSetting<T extends unknown>({ key }: ISetting): Promise<T> {
 
         return new Promise((resolve, reject) => {
 
-            storage.get(key, (err: Error, data: any) => {
+            storage.get(key, (err: Error, data: never) => {
                 if (err) {
                     reject(err)
                 }
@@ -257,7 +257,7 @@ class Api {
         return [normalized, max, min]
     }
 
-    async restart() {
+    async restart(): Promise<void> {
 
         console.log("Restarting...")
 
@@ -297,7 +297,7 @@ class Api {
             robotjs.moveMouse(rel.x, rel.y)
         }
 
-        const direction = ({ bounds: { x, y, width, height } }: { bounds: IBounds }) => {
+        const direction = ({ bounds: { width, height } }: { bounds: IBounds }) => {
 
             return width > height ? 'horizontal' : 'vertical'
         }

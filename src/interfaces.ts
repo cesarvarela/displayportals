@@ -1,7 +1,8 @@
 interface ISetting {
     key: string,
-    data?: Record<string, unknown>|[],
+    data?: unknown,
 }
+
 interface IBounds {
     x: number,
     y: number,
