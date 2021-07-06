@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Button } from 'grommet'
 import { Trash as TrashIcon } from 'grommet-icons'
 import usePercentage from '../lib/usePercentage'
+import { IPortal } from '../interfaces'
 
 const TrashWrapper = styled.div`
     position: absolute;
@@ -22,7 +23,7 @@ const Trash = styled(Button)`
     }
 `
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ diagonal: string }>`
     position: absolute;
     pointer-events: none;
     & > svg {
@@ -42,7 +43,7 @@ const Wrapper = styled.div`
     }
 `
 
-export default function Connection({ from, to, onClick }) {
+export default function Connection({ from, to, onClick }: { from: IPortal, to: IPortal, onClick: () => unknown }): JSX.Element {
 
     const toPercentage = usePercentage()
 

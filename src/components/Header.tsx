@@ -1,7 +1,7 @@
 import React from 'react'
-import { Box, Header as GrommetHeader, Image, Heading, Text } from 'grommet'
+import { Box, Header as GrommetHeader, Image, Heading } from 'grommet'
 
-export default function Header() {
+export default function Header(): JSX.Element {
 
     return <GrommetHeader align="center" direction="row" justify="between" gap="medium" fill="horizontal">
         <Box align="center" justify="center" width="xxsmall">
@@ -9,6 +9,6 @@ export default function Header() {
         </Box>
         <Heading textAlign="start" level="2" size="medium">
             Display Portals
-    </Heading>
+        </Heading>
     </GrommetHeader>
 }

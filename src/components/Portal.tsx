@@ -1,11 +1,10 @@
-import { Desktop } from 'grommet-icons'
-import React, { useRef, useState } from 'react'
+import React, { CSSProperties } from 'react'
+import { IBounds, IConnection, IPortal } from '../interfaces'
 import styled from 'styled-components'
 import usePercentage from '../lib/usePercentage'
-import { toPercentageConverter } from '../lib/utils'
 
 const Wrapper = styled.div`
-    background: ${({ color }) => color == 'blue' ? '#2ABBE8' : color == 'orange' ? '#F79321' : '#ccc'};
+    background: ${({ color }: { color: string }) => color == 'blue' ? '#2ABBE8' : color == 'orange' ? '#F79321' : '#ccc'};
     position: absolute;
     opacity: .3;
     min-height: 10px;
@@ -16,7 +15,8 @@ const Wrapper = styled.div`
     transition: all .5s;
 `
 
-function Portal({ connections, id, from, bounds, onClick, style = {}, className }) {
+function Portal({ connections, id, from, bounds, onClick, style = {}, className }
+    : { connections: IConnection[], id: string, from: IPortal, bounds: IBounds, onClick: () => (unknown), style: CSSProperties, className: string }) {
 
     const toPercentage = usePercentage()
 
@@ -39,14 +39,14 @@ function Portal({ connections, id, from, bounds, onClick, style = {}, className 
 
         const color = connections.some(c => (c.from.id == id)) ? 'orange' : 'blue'
 
-        return <Wrapper className={className} color={color} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
+        return <Wrapper className={className} color={color} style={{ ...position, ...style, opacity: 1, cursor: 'default' }} />
     }
 
     const selected = from && from.id == id
 
     if (selected) {
 
-        return <Wrapper className={className} color={'orange'} style={{ ...position, ...style, opacity: 1, cursor: 'default', disabled: true }} />
+        return <Wrapper className={className} color={'orange'} style={{ ...position, ...style, opacity: 1, cursor: 'default' }} />
     }
 
     const color = from ? 'blue' : 'orange'

@@ -2,20 +2,25 @@ import { Tray, Menu, app, BrowserWindow, ipcMain, shell } from 'electron'
 import path from 'path'
 import storage from 'electron-json-storage'
 import nativeDisplays from "displays"
+import { ISetting, IBounds, INativeDisplay, IDisplay, IConnection, IPosition } from './interfaces'
+
+declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 class Api {
 
-    constructor() {
-        this.mainWindow = null
-        this.tray = null
-        this.displays = null
-        this.desktopSize = null
-        this.desktopOffset = null
-        this.lastPortal = null
-        this.interval = null
-    }
+    private mainWindow: BrowserWindow = null
+    private tray: Tray = null
+    private displays: any[] = null
+    private desktopSize: any = null
+    private desktopOffset: any = null
+    private lastPortal: any = null
+    private interval: NodeJS.Timer = null
 
-    init() {
+    init(): void {
+
+        console.log('init')
+
         this.setupDisplays()
         this.setupStorage()
         this.setupTray()
@@ -26,7 +31,7 @@ class Api {
         this.start()
     }
 
-    async setupDisplays() {
+    async setupDisplays(): Promise<void> {
         const [displays, size, offset] = await this.detectDisplays()
 
         this.displays = displays
@@ -34,9 +39,9 @@ class Api {
         this.desktopOffset = offset
     }
 
-    setupTray() {
+    setupTray(): void {
 
-        this.tray = new Tray(path.join(__dirname, 'win-icon.png'));
+        this.tray = new Tray(path.join(__dirname, 'assets', 'win-icon.png'));
 
         const menu = Menu.buildFromTemplate([
             {
@@ -63,7 +68,7 @@ class Api {
         this.tray.setContextMenu(menu)
     }
 
-    setupIpc() {
+    setupIpc(): void {
 
         ipcMain.handle('getDisplays', async () => {
             return this.displays
@@ -94,9 +99,13 @@ class Api {
 
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
 
+            console.log('we')
+
             this.mainWindow.show()
         }
         else {
+
+            console.log('wo')
 
             this.mainWindow = new BrowserWindow({
                 width: 800,
@@ -120,7 +129,7 @@ class Api {
         }
     }
 
-    async addConnection({ from, to }) {
+    async addConnection({ from, to }: IConnection): Promise<IConnection[]> {
 
         const connections = await this.getSetting({ key: 'connections' })
 
@@ -135,11 +144,11 @@ class Api {
         return connections
     }
 
-    async removeConnection({ connection }) {
+    async removeConnection({ connection }: { connection: IConnection }): Promise<IConnection[]> {
 
         let connections = await this.getSetting({ key: 'connections' })
 
-        connections = connections.filter(c => !(c.from.id == connection.from.id && c.to.id == connection.to.id))
+        connections = connections.filter((c: IConnection) => !(c.from.id == connection.from.id && c.to.id == connection.to.id))
 
         await this.setSetting({ key: 'connections', data: connections })
 
@@ -150,38 +159,38 @@ class Api {
         return connections
     }
 
-    async getConnections() {
+    async getConnections(): Promise<IConnection[]> {
 
         return this.getSetting({ key: 'connections' })
     }
 
-    async setupStorage() {
+    async setupStorage(): Promise<void> {
 
         if (!await this.hasSetting({ key: 'connections' })) {
             await this.setSetting({ key: 'connections', data: [] })
         }
     }
 
-    async setSetting({ key, data }) {
+    async setSetting({ key, data }: ISetting): Promise<boolean> {
 
         return new Promise((resolve, reject) => {
 
-            storage.set(key, data, (err) => {
+            storage.set(key, data, (err: Error) => {
                 if (err) {
                     reject(err)
                 }
                 else {
-                    resolve()
+                    resolve(true)
                 }
             })
         })
     }
 
-    async hasSetting({ key }) {
+    async hasSetting({ key }: ISetting): Promise<boolean> {
 
         return new Promise((resolve, reject) => {
 
-            storage.has(key, (err, hasKey) => {
+            storage.has(key, (err: Error, hasKey: boolean) => {
                 if (err) {
                     reject(err)
                 }
@@ -192,11 +201,11 @@ class Api {
         })
     }
 
-    async getSetting({ key }) {
+    async getSetting({ key }: ISetting): Promise<any> {
 
         return new Promise((resolve, reject) => {
 
-            storage.get(key, (err, data) => {
+            storage.get(key, (err: Error, data: any) => {
                 if (err) {
                     reject(err)
                 }
@@ -207,9 +216,9 @@ class Api {
         })
     }
 
-    async detectDisplays() {
+    async detectDisplays(): Promise<[IDisplay[], IPosition, IPosition]> {
 
-        const displays = nativeDisplays()
+        const displays: INativeDisplay[] = nativeDisplays()
         const min = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
         const max = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
 
@@ -257,8 +266,9 @@ class Api {
         console.log("Restarted")
     }
 
-    async start() {
+    async start(): Promise<void> {
 
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const robotjs = require('robotjs')
 
         console.log("Starting...")
@@ -267,7 +277,7 @@ class Api {
 
         console.log(`Loaded ${connections.length} connections.`)
 
-        const contains = ({ bounds, pos: { x, y } }) => {
+        const contains = ({ bounds, pos: { x, y } }: { bounds: IBounds, pos: IPosition }) => {
 
             return bounds.x <= x && x <= bounds.x + bounds.width && bounds.y <= y && y <= bounds.y + bounds.height;
         }
@@ -279,7 +289,7 @@ class Api {
             return { x: x + this.desktopOffset.x, y: y + this.desktopOffset.y }
         }
 
-        const relativeSet = ({ x, y }) => {
+        const relativeSet = ({ x, y }: IPosition) => {
 
             const rel = { x: x - this.desktopOffset.x, y: y - this.desktopOffset.y }
 
@@ -287,7 +297,7 @@ class Api {
             robotjs.moveMouse(rel.x, rel.y)
         }
 
-        const direction = ({ bounds: { x, y, width, height } }) => {
+        const direction = ({ bounds: { x, y, width, height } }: { bounds: IBounds }) => {
 
             return width > height ? 'horizontal' : 'vertical'
         }

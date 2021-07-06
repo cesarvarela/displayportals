@@ -1,5 +1,5 @@
-const { app } = require('electron');
-const log = require('electron-log');
+import { app } from 'electron'
+import log from 'electron-log'
 
 console.log = log.log;
 
@@ -13,11 +13,9 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let api = null
 
 app.on('ready', () => {
+
   api = new Api()
   api.init()
 });
 
-app.on('window-all-closed', () => {
-
-
-})
+app.on('window-all-closed', () => ({}))

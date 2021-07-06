@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { CSSProperties } from 'react'
 import { Box, Text } from 'grommet'
 import usePercentage from '../lib/usePercentage'
+import { IBounds } from '../interfaces'
 
-export default function Screen({ number, bounds }) {
+export default function Screen({ bounds, number }: { bounds: IBounds, number: string }): JSX.Element {
 
     const toPercentage = usePercentage()
 
@@ -12,7 +13,7 @@ export default function Screen({ number, bounds }) {
 
     const { x, y, width, height } = toPercentage(bounds)
 
-    const style = {
+    const style: CSSProperties = {
         position: 'absolute',
         left: `${x}%`,
         top: `${y}%`,
@@ -21,7 +22,7 @@ export default function Screen({ number, bounds }) {
     }
 
     return <Box align="center" justify="center" background={{ "color": "light-3" }} round="small" style={style} border={{ "color": "light-4", "size": "medium" }}>
-        <Text textAlign="center" weight="bold" size="3xl" color="dark-6">
+        <Text textAlign="center" weight="bold" size="3xl" color="dark-6" >
             {number}
         </Text>
     </Box>

@@ -1,19 +1,20 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { IBounds } from '../interfaces'
 const { getDesktopSize } = window.mouseportals
 
-export default function usePercentage() {
+export default function usePercentage(): (bounds: IBounds) => IBounds {
 
     const [converter, setConverter] = useState(null)
 
-    useState(() => {
+    useEffect(() => {
 
         async function load() {
-            
+
             const size = await getDesktopSize()
 
             setConverter(() => {
 
-                return ({ x, y, width, height }) => ({
+                return ({ x, y, width, height }: IBounds): IBounds => ({
                     width: width * 100 / size.x,
                     height: height * 100 / size.y,
                     x: x * 100 / size.x,
@@ -24,8 +25,7 @@ export default function usePercentage() {
 
         load()
 
-    }, [])
+    }, [getDesktopSize])
 
     return converter
-
 }

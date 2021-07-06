@@ -1,15 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, MouseEvent } from 'react'
 import styled from 'styled-components'
-import { Grommet, Button, Box, List, Heading, Text } from 'grommet'
+import { Grommet, Box } from 'grommet'
 import Screen from './components/Screen'
 import Portal from './components/Portal'
 import Connection from './components/Connection'
 import theme from './theme'
 import Header from './components/Header'
+import { IBounds, IConnection, IDisplay, IPortal, } from './interfaces'
+
+interface IMousePortals {
+    getDesktopSize: () => Promise<IBounds>,
+    getDisplays: () => Promise<IDisplay[]>,
+    getConnections: () => Promise<IConnection[]>,
+    addConnection: ({ from, to }: { from: IPortal, to: IPortal }) => Promise<IConnection[]>,
+    removeConnection: ({ connection }: { connection: IConnection }) => Promise<IConnection[]>,
+}
+
+declare global { interface Window { mouseportals: IMousePortals } }
 
 const { getDisplays, getConnections, addConnection, removeConnection } = window.mouseportals
 
-const Desktop = styled.div`
+
+
+const Desktop = styled.div<{ onClick: (event: MouseEvent<HTMLDivElement>) => void }> `
     position: relative;
     width: 100%;
     padding-top: 50%;
@@ -24,7 +37,7 @@ const Desktop = styled.div`
     }
 `
 
-function App() {
+function App(): JSX.Element {
 
     const desktopRef = useRef()
     const [screens, setScreens] = useState([])
@@ -37,10 +50,10 @@ function App() {
         const loadScreens = async () => {
 
             const normalized = await getDisplays()
-            let portals = []
-            let screens = []
+            const portals = []
+            const screens = []
 
-            for (let screen of normalized) {
+            for (const screen of normalized) {
 
                 screens.push({ ...screen })
 
@@ -92,7 +105,7 @@ function App() {
 
     }, [])
 
-    const onPortalClick = async ({ portal }) => {
+    const onPortalClick = async ({ portal }: { portal: IPortal }) => {
 
         if (!from) {
             setFrom(portal)
@@ -105,7 +118,7 @@ function App() {
         }
     }
 
-    const onTrashClick = async ({ connection }) => {
+    const onTrashClick = async ({ connection }: { connection: IConnection }): Promise<void> => {
 
         const connections = await removeConnection({ connection })
         setConnections(connections)
@@ -116,7 +129,7 @@ function App() {
         setFrom(null)
     }
 
-    const onDesktopClick = (e) => {
+    const onDesktopClick = (e: MouseEvent<HTMLDivElement>) => {
 
         if (e.target == desktopRef.current) {
             cancel()
@@ -133,7 +146,7 @@ function App() {
                 <Box align="center" justify="center" background={{ color: "background-front" }} round="xsmall" fill="horizontal" pad="medium">
 
                     {screens.length &&
-                        <Desktop onClick={onDesktopClick} ref={desktopRef}>
+                        <Desktop onClick={(e) => onDesktopClick(e)} ref={desktopRef}>
                             {screens.map((s, i) => <Screen key={s.id} index={i} {...s} />)}
 
                             {portals.map(portal => {
